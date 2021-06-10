@@ -1,5 +1,4 @@
 # deals with CRUD operation on JSON file other than user_db.json
-
 import os
 from pathlib import Path
 
@@ -14,7 +13,7 @@ def get_bot_db_data():
     return a
 
 
-def get_keyboard_button_from_data_db():
+def get_keyboard_buttons_from_db():
     for i in get_bot_db_data():
         if hasattr(i, "keyboards"):
             return i.keyboards

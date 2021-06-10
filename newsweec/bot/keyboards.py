@@ -1,15 +1,16 @@
 from typing import List
+
 from telebot.types import KeyboardButton
 from telebot.types import ReplyKeyboardMarkup
 
-from newsweec.utils.decorators import get_keyboard_button
+from newsweec.utils.decorators import get_keyboard_buttons
 
 
-@get_keyboard_button("basic")
-def basic_start_keyboard(button: List[str] = []) -> ReplyKeyboardMarkup:
+@get_keyboard_buttons("basic")
+def basic_start_keyboard(buttons: List[str] = []) -> ReplyKeyboardMarkup:
 
     markup = ReplyKeyboardMarkup(row_width=2)
-    markup.add(*[KeyboardButton(i) for i in button])
+    markup.add(*[KeyboardButton(i) for i in buttons])
     return markup
 
 
