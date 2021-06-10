@@ -13,7 +13,7 @@ handle_log = logging.getLogger("HandleLogger")
 handle_logger = Logger(handle_log, base_level=logging.DEBUG, filename="")
 
 
-class HandleIncomingUsersCommand:
+class HandleIncomingUsers:
 
     def __init__(self) -> None:
         self._q: Deque[NewUser] = deque()
