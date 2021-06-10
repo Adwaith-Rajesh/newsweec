@@ -1,5 +1,5 @@
 # Newsweec
-
+[![Testing](https://img.shields.io/github/workflow/status/Adwaith-Rajesh/newsweec/Testing?label=Testing&style=for-the-badge)](https://github.com/Adwaith-Rajesh/newsweec/actions/workflows/test.yml)
 [![License](https://img.shields.io/github/license/Adwaith-Rajesh/newsweec?logoColor=brightgreen&style=for-the-badge)](./LICENSE)
 ![https://adwaith-rajesh.github.io/newsweec/](./assets/newsweec-logo-expanded.png "newsweec")
 

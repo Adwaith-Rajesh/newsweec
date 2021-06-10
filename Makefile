@@ -6,5 +6,5 @@ imports:
 	reorder-python-imports newsweec.py
 	reorder-python-imports newsweec/*.py
 
-test:
+run-test:
 	pytest -rx -v
