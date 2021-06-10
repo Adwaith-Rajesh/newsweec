@@ -144,3 +144,5 @@ tasks.todo
 temp/
 newsweec/database/*.json
 feature_test.py
+db_store
+logs
