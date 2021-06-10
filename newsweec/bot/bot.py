@@ -9,6 +9,8 @@ from telebot.types import Message
 from newsweec.meta.logger import logging  # noreorder
 from newsweec.meta.logger import Logger  # noreorder
 
+from .keyboards import basic_start_keyboard
+
 BOT_TOKEN = os.environ.get("BOT_API_TOKEN")
 
 b_l = logging.getLogger("bot_log")
@@ -19,7 +21,8 @@ bot = TeleBot(token=BOT_TOKEN)
 
 @bot.message_handler(commands=['start'])
 def start(msg: Message) -> None:
-    bot.reply_to(msg, "Hello")
+    bot.send_message(msg.from_user.id, "Hello",
+                     reply_markup=basic_start_keyboard())
 
 
 def start_bot():
