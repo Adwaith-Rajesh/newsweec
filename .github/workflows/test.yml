@@ -25,7 +25,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest
         pip install pytest-mock
+        pip install flake8
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
         pytest -v
+    - name: Flake8 Test
+      run: |
+        flake8 newsweec/ --max-line-length=120

@@ -8,3 +8,6 @@ imports:
 
 run-test:
 	pytest -rx -v
+
+flake:
+	flake8 newsweec/ --max-line-length=120
