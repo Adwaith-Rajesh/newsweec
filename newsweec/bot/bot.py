@@ -9,6 +9,11 @@ from telebot.types import Message
 from newsweec.meta.logger import logging  # noreorder
 from newsweec.meta.logger import Logger  # noreorder
 
+from newsweec.database.bot_db import is_valid_command
+from newsweec.meta.handlers import HandleIncomingUsers
+from newsweec.utils._dataclasses import MessageInfo
+from newsweec.utils.decorators import get_msg_info
+
 from .keyboards import basic_start_keyboard
 
 BOT_TOKEN = os.environ.get("BOT_API_TOKEN")
@@ -17,12 +22,23 @@ b_l = logging.getLogger("bot_log")
 bot_logger = Logger(b_l, logging.DEBUG, filename="")
 
 bot = TeleBot(token=BOT_TOKEN)
+users_handler = HandleIncomingUsers()
 
 
+# command handler
 @bot.message_handler(commands=['start'])
 def start(msg: Message) -> None:
     bot.send_message(msg.from_user.id, "Hello",
                      reply_markup=basic_start_keyboard())
+
+
+# msg handler
+# handles all the messages and checks whether it is a command or not
+
+@bot.message_handler(func=lambda msg: True)
+@get_msg_info
+def message_handler(msg: Message, msg_info: MessageInfo = None) -> None:
+    print(msg_info)
 
 
 def start_bot():

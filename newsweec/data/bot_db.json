@@ -1,10 +1,28 @@
 {
     "data": [
         {
+            "commands": [
+                "settings",
+                "news",
+                "add-topics",
+                "remove-topics",
+                "profile",
+                "stop-feed"
+            ],
             "keyboards": {
                 "basic": [
                     "NEWS",
                     "Settings"
+                ],
+                "settings": [
+                    "Add Topics",
+                    "Remove Topics",
+                    "Profile",
+                    "Stop Feed"
+                ],
+                "yes_no": [
+                    "yes",
+                    "no"
                 ]
             }
         }
