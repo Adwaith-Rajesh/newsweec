@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from dataclasses import field
 from time import time
+from typing import List
 
 
 @dataclass
@@ -35,3 +37,11 @@ class MessageInfo:
     chat_id: int
     message_id: int
     text: str
+
+
+@dataclass
+class UserDBInfo:
+    """Info about the user from the DB"""
+    feed: bool
+    user_id: int
+    topics: List[str] = field(default_factory=lambda: [])
