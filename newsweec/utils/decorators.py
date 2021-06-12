@@ -5,8 +5,8 @@ from typing import List
 
 from telebot.types import Message
 
-from newsweec.database.bot_db import get_keyboard_buttons_from_db
 from .bot_utils import message_info_generator
+from newsweec.database.bot_db import get_keyboard_buttons_from_db
 
 
 def get_keyboard_buttons(keyboard_name: str):
