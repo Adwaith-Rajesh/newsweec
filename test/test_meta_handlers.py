@@ -1,9 +1,7 @@
-import time
-
 import pytest
 
-from newsweec.meta.handlers import HandleIncomingUsers
 from newsweec.meta.handlers import CurrentUserState
+from newsweec.meta.handlers import HandleIncomingUsers
 from newsweec.utils._dataclasses import NewUser
 from newsweec.utils._dataclasses import UserCommand
 # CurrentUserState -> cus
@@ -34,7 +32,7 @@ def test_cus_get_user_command(cus_class: CurrentUserState):
     cus_class._user_commands.append(usr_cmd)
     assert len(cus_class._user_commands) == 1
     assert cus_class.get_user_command(123456) == "test"
-    assert cus_class.get_user_command(235640) == None
+    assert cus_class.get_user_command(235640) is None
 
 
 def test_cus_update_command_user_exists(cus_class: CurrentUserState):
