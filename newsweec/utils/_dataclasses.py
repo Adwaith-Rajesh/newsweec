@@ -42,6 +42,7 @@ class MessageInfo:
 @dataclass
 class UserDBInfo:
     """Info about the user from the DB"""
-    feed: bool
+    feed: bool  # if false, the bot will not send any news feeds on a daily basis
     user_id: int
+    db_id: int
     topics: List[str] = field(default_factory=lambda: [])

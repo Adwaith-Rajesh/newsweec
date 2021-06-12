@@ -4,8 +4,9 @@ from typing import Dict
 from typing import List
 from typing import Union
 
+from pysondb import db
+
 from newsweec.utils._dataclasses import UserDBInfo
-# from pysondb import db
 
 DBType = List[Dict[str, Union[int, bool, List[str]]]]
 
@@ -15,31 +16,72 @@ def get_db_path() -> str:
         __file__)).parent.parent, "db_store", "users_db.json")
 
     if not Path(USERS_DB).is_file():
-        raise FileNotFoundError(f"{get_db_path()!r} does not exists")
+        raise FileNotFoundError(f"{USERS_DB!r} does not exists")
 
     return USERS_DB
 
 
-def get_all_data() -> DBType:
-    return get_db_path()
+class UsersDB:
 
+    def __init__(self) -> None:
+        self.db = db.getDb(get_db_path())
 
-def get_user_info(user_id: int) -> UserDBInfo:
-    pass
+    def get_all_data(self, ) -> DBType:
+        db_data = self.db.getAll()
+        return db_data
 
+    def get_user_info(self, user_id: int) -> Union[UserDBInfo, None]:
 
-def add_user(user_id: int) -> None:
-    """Mainly called when the user starts the bot for the
-    first time.
-    """
-    pass
+        if self.check_user_exists(user_id):
+            user_data = self.db.getBy({"user_id": user_id})[0]
+            user_data["db_id"] = user_data.pop("id")
+            return UserDBInfo(**user_data)
 
+        return None
 
-def update_user(user_id: int, **kwargs) -> None:
-    """Update the user info based on the kwargs"""
-    pass
+    def add_user(self, user_id: int, **kwargs) -> int:
+        """Mainly called when the user starts the bot for the
+        first time.
 
+        return: int: the db_id
+        """
+        if not self.check_user_exists(user_id):
+            db_id = self.db.add({**{
+                "user_id": user_id,
+                "feed": True,
+                "topics": ["business", "entertainment", "general", "health", "science", "sports", "technology"]
+            }, **kwargs})
 
-def delete_user(user_id: int) -> None:
-    """set feed to false"""
-    pass
+            return db_id
+
+        return 0
+
+    def update_user(self, user_id: int, **kwargs) -> Union[int, None]:
+        """Update the user info based on the kwargs
+        if the user doesn't exist the user is created in the DB
+        """
+        # get the db_id
+        ud = self.get_user_info(user_id)
+
+        if ud:
+            default_data_schema = {
+                "user_id": ud.user_id,
+                "topics": ud.topics,
+                "feed": ud.feed,
+                "id": ud.db_id
+            }
+
+            new_data = {**default_data_schema, **kwargs}
+            self.db.update(default_data_schema, new_data)
+
+        else:
+            rv = self.add_user(user_id, **kwargs)
+            return rv
+
+    def delete_user(self, user_id: int) -> None:
+        """set feed to false"""
+        if self.check_user_exists(user_id):
+            self.update_user(user_id, feed=False)
+
+    def check_user_exists(self, user_id: int) -> bool:
+        return True if self.db.getBy({"user_id": user_id}) else False
