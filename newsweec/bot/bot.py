@@ -15,6 +15,7 @@ from newsweec.meta.handlers import HandleIncomingUsers
 from newsweec.utils._dataclasses import MessageInfo
 from newsweec.utils.decorators import get_msg_info
 from newsweec.utils._dataclasses import NewUser
+from newsweec.utils.msg_parser import parse_message
 
 from .keyboards import basic_start_keyboard
 
@@ -43,7 +44,7 @@ def start(msg: Message) -> None:
 def message_handler(msg: Message, msg_info: MessageInfo = None) -> None:
     if is_valid_command(msg_info.text):
         users_handler.add_user(
-            NewUser(user_id=msg_info.user_id, chat_id=msg_info.chat_id, command=msg.text))
+            NewUser(user_id=msg_info.user_id, chat_id=msg_info.chat_id, command=msg.text.lower()))
 
     else:
         bot.send_message(msg_info.chat_id, text="Invalid Option 😅")
@@ -52,6 +53,11 @@ def message_handler(msg: Message, msg_info: MessageInfo = None) -> None:
 # get the user from the user handler for message parsing
 def get_user_from_user_handler() -> None:
     user = users_handler.get_user()
+    user.command = user.command.lower().replace(" ", "-")
+
+    if user:
+        user.command = user.command.lower().replace(" ", "-")
+        parse_message(bot, user, user_state_handler)
 
 
 # starting sequence
@@ -72,7 +78,8 @@ def start_bot():
             job_thread.start()
 
         bot_logger.log(logging.DEBUG, message="Starting scheduler")
-        # schedule.every(0.5).seconds.do(run_threaded, get_user_from_q)
+        schedule.every(0.5).seconds.do(
+            run_threaded, get_user_from_user_handler)
         # schedule.every(20).seconds.do(run_threaded, clean_q)
         # schedule.every().day.at("01:00").do(run_threaded, todays_tasks)
         # schedule.every(1).hour.do(run_threaded, delete_history)

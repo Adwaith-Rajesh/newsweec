@@ -29,7 +29,7 @@ def is_valid_command(cmd: str) -> bool:
     """Returns true if the cmd is a valid command i.e the cmd is something that
         can trigger and action (or is a text on a keyboard)
     """
-    return True if cmd.lower() in get_command_from_db() else False
+    return True if cmd.lower().replace(" ", "-") in get_command_from_db() else False
 
 
 if __name__ == "__main__":

@@ -3,10 +3,7 @@ from telebot import TeleBot
 from telebot.types import CallbackQuery
 from telebot.types import Message
 
-
-from newsweec.bot.keyboards import *
 from ._dataclasses import MessageInfo
-from ._dataclasses import NewUser
 
 
 def message_info_generator(msg: Message) -> MessageInfo:
@@ -19,8 +16,4 @@ def message_info_generator(msg: Message) -> MessageInfo:
 
 
 def call_back_data_generator(cb: CallbackQuery):
-    pass
-
-
-def parse_message(bot: TeleBot, user: NewUser) -> None:
     pass

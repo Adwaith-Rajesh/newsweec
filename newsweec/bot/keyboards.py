@@ -16,7 +16,7 @@ def basic_start_keyboard(buttons: List[str] = []) -> ReplyKeyboardMarkup:
 
 @get_keyboard_buttons("settings")
 def settings_keyboard(buttons: List[str] = []) -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(row_width=2)
+    markup = ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True)
     markup.add(*[KeyboardButton(i) for i in buttons])
     return markup
 
