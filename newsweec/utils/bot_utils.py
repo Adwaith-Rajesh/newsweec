@@ -1,5 +1,4 @@
 # all the meta funcs related to the bot
-from telebot import TeleBot
 from telebot.types import CallbackQuery
 from telebot.types import Message
 

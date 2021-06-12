@@ -11,6 +11,11 @@ def make_folder(folder_name: str) -> None:
         os.mkdir(folder_name)
 
 
+def make_db_files(filename: str) -> None:
+    with open(filename, "w") as f:
+        f.write('{"data": []}')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -21,8 +26,13 @@ def main():
 
     if args.init:
         folders = ["db_store", "logs"]
+        db_files = [os.path.join("db_store", "users_db.json")]
+
         for f in folders:
             make_folder(f)
+
+        for f in db_files:
+            make_db_files(f)
         quit()
 
     if args.start:

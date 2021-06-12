@@ -1,8 +1,8 @@
 from telebot import TeleBot
 
+from newsweec.bot.keyboards import settings_keyboard
 from newsweec.meta.handlers import CurrentUserState
 from newsweec.utils._dataclasses import NewUser
-from newsweec.bot.keyboards import settings_keyboard
 
 
 def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState) -> None:
