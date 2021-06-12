@@ -38,6 +38,9 @@ class MessageInfo:
     message_id: int
     text: str
 
+    def __repr__(self) -> str:
+        return f"{self.user_id=} {self.chat_id=} {self.message_id=} {self.text=}"
+
 
 @dataclass
 class UserDBInfo:
@@ -46,3 +49,6 @@ class UserDBInfo:
     user_id: int
     db_id: int
     topics: List[str] = field(default_factory=lambda: [])
+
+    def __repr__(self) -> str:
+        return f"{self.user_id=} {self.feed=} {self.db_id=} {self.topics=}"
