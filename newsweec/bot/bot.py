@@ -10,6 +10,7 @@ from newsweec.meta.logger import logging  # noreorder
 from newsweec.meta.logger import Logger  # noreorder
 
 from newsweec.database.bot_db import is_valid_command
+from newsweec.database.users_db import UsersDB
 from newsweec.meta.handlers import CurrentUserState
 from newsweec.meta.handlers import HandleIncomingUsers
 from newsweec.utils._dataclasses import MessageInfo
@@ -27,11 +28,13 @@ bot_logger = Logger(b_l, logging.DEBUG, filename="")
 bot = TeleBot(token=BOT_TOKEN)
 users_handler = HandleIncomingUsers()
 user_state_handler = CurrentUserState()
+users_db = UsersDB()
 
 
 # command handler
 @bot.message_handler(commands=['start'])
 def start(msg: Message) -> None:
+    users_db.add_user(msg.from_user.id)
     bot.send_message(msg.from_user.id, "Hello",
                      reply_markup=basic_start_keyboard())
 
@@ -42,7 +45,9 @@ def start(msg: Message) -> None:
 @bot.message_handler(func=lambda msg: True)
 @get_msg_info
 def message_handler(msg: Message, msg_info: MessageInfo = None) -> None:
-    if is_valid_command(msg_info.text):
+    """Add user to the q if the msg is a command or the msg is part of a command"""
+
+    if is_valid_command(msg_info.text) or not user_state_handler.get_user_command(msg_info.user_id) in ["none", None]:
         users_handler.add_user(
             NewUser(user_id=msg_info.user_id, chat_id=msg_info.chat_id, command=msg.text.lower()))
 
@@ -53,14 +58,14 @@ def message_handler(msg: Message, msg_info: MessageInfo = None) -> None:
 # get the user from the user handler for message parsing
 def get_user_from_user_handler() -> None:
     user = users_handler.get_user()
-    user.command = user.command.lower().replace(" ", "-")
 
     if user:
         user.command = user.command.lower().replace(" ", "-")
-        parse_message(bot, user, user_state_handler)
-
+        parse_message(bot, user, user_state_handler, users_db)
 
 # starting sequence
+
+
 def start_bot():
     def pol():
         bot_logger.log(logging.DEBUG, message="Starting Poll")
