@@ -5,7 +5,7 @@
         "add-topics",
         "remove-topics",
         "profile",
-        "stop-feed"
+        "daily-feed"
     ],
     "keyboards": {
         "basic": [
@@ -16,11 +16,19 @@
             "Add Topics",
             "Remove Topics",
             "Profile",
-            "Stop Feed"
+            "Daily Feed"
+        ],
+        "daily_feed": [
+            "Start",
+            "Stop"
         ],
         "yes_no": [
-            "yes",
-            "no"
+            "Yes",
+            "No"
+        ],
+        "cancel_done": [
+            "Cancel",
+            "Done"
         ]
     },
     "topics": [
