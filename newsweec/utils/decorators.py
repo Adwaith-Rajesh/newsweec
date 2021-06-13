@@ -15,7 +15,7 @@ def get_keyboard_buttons(keyboard_name: str):
         @wraps(f)
         def wrapper(*args, **kwargs):
             button_collection = get_keyboard_buttons_from_db()
-            button = button_collection.__getattribute__(keyboard_name)
+            button = button_collection[keyboard_name]
             rv = f(button)
             return rv
         return wrapper

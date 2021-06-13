@@ -1,28 +1,37 @@
 # deals with CRUD operation on JSON file other than user_db.json
+import json
 import os
 from pathlib import Path
+from typing import Dict
+from typing import List
+from typing import Union
 
-from pysondb import db
+from filelock import FileLock
 
 BOT_DB = os.path.join(Path(os.path.dirname(
     __file__)).parent, "data", "bot_db.json")
 
+lock = FileLock(f"{BOT_DB}.lock")
 
-def get_bot_db_data():
-    a = db.getDb(BOT_DB).getAll(objectify=True)
-    return a
-
-
-def get_keyboard_buttons_from_db():
-    for i in get_bot_db_data():
-        if hasattr(i, "keyboards"):
-            return i.keyboards
+BotDBType = Dict[str, Union[List[str], Dict[str, List[str]]]]
 
 
-def get_command_from_db():
-    for i in get_bot_db_data():
-        if hasattr(i, "commands"):
-            return i.commands
+def get_bot_db_data() -> BotDBType:
+    with lock:
+        with open(BOT_DB, "r") as f:
+            return json.load(f)
+
+
+def get_keyboard_buttons_from_db() -> Dict[str, List[str]]:
+    return get_bot_db_data()["keyboards"]
+
+
+def get_command_from_db() -> List[str]:
+    return get_bot_db_data()["commands"]
+
+
+def get_topics() -> List[str]:
+    return get_bot_db_data()["topics"]
 
 
 def is_valid_command(cmd: str) -> bool:
