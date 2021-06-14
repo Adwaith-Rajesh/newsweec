@@ -1,12 +1,18 @@
+from typing import Callable
+from typing import Optional
+
 import pytest
 
 from newsweec.meta.handlers import CurrentUserState
+from newsweec.meta.handlers import FunctionStagingArea
 from newsweec.meta.handlers import HandleIncomingUsers
 from newsweec.utils._dataclasses import NewUser
 from newsweec.utils._dataclasses import UserCommand
+
+
 # CurrentUserState -> cus
 # HandleIncomingUsers -> hiuc
-
+# FunctionStagingArea -> fsa
 
 @pytest.fixture()
 def cus_class() -> CurrentUserState:
@@ -15,9 +21,29 @@ def cus_class() -> CurrentUserState:
 
 
 @pytest.fixture()
-def hiuc_class() -> HandleIncomingUsers():
+def hiuc_class() -> HandleIncomingUsers:
     hiuc = HandleIncomingUsers()
     return hiuc
+
+
+@pytest.fixture()
+def fsa_class() -> FunctionStagingArea:
+    fsa = FunctionStagingArea()
+    return fsa
+
+
+@pytest.fixture()
+def fsa_test_func() -> Callable[[int, Optional[int]], int]:
+
+    def foo(x: int, add_val: Optional[int] = None) -> int:
+
+        val = x * x + x
+
+        if add_val:
+            val += add_val
+        return val
+
+    return foo
 
 
 def test_cus_add_user_command(cus_class: CurrentUserState):
@@ -100,3 +126,38 @@ def test_hiuc_get_user_many_users(hiuc_class: HandleIncomingUsers):
 
     # three users are already popped
     assert hiuc_class.get_user().user_id == 3
+
+
+def test_fsa_add(fsa_class: FunctionStagingArea, fsa_test_func: Callable[[int, Optional[int]], int]):
+    fsa_class.add(1, fsa_test_func, args=(2,))
+    fsa_class.add(2, fsa_test_func, args=(2,), kwargs={"add_val": 3})
+
+    assert len(fsa_class._to_perform) == 2
+    assert fsa_class._to_perform[1].fn == fsa_test_func
+    assert fsa_class._to_perform[1].args == (2,)
+    assert fsa_class._to_perform[1].kwargs is None
+
+    assert fsa_class._to_perform[2].fn == fsa_test_func
+    assert fsa_class._to_perform[2].args == (2,)
+    assert fsa_class._to_perform[2].kwargs == {"add_val": 3}
+
+
+def test_fsa_remove(fsa_class: FunctionStagingArea, fsa_test_func: Callable[[int, Optional[int]], int]):
+    fsa_class.add(1, fsa_test_func, args=(2,))
+    fsa_class.add(2, fsa_test_func, args=(3,))
+    fsa_class.add(3, fsa_test_func, args=(4,))
+
+    assert len(fsa_class._to_perform) == 3
+    fsa_class.remove(1)
+    assert len(fsa_class._to_perform) == 2
+
+
+def test_fsa_perform(fsa_class: FunctionStagingArea, fsa_test_func: Callable[[int, Optional[int]], int]):
+    fsa_class.add(1, fsa_test_func, args=(2,))
+    fsa_class.add(2, fsa_test_func, args=(2,), kwargs={"add_val": 3})
+
+    assert len(fsa_class._to_perform) == 2
+    rv = fsa_class.perform(1)
+    rv_2 = fsa_class.perform(2)
+    assert rv == 6
+    assert rv_2 == 9
