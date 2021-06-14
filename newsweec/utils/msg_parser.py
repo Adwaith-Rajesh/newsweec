@@ -1,3 +1,4 @@
+from contextlib import suppress
 from typing import List
 
 from telebot import TeleBot
@@ -71,6 +72,43 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
             reply_markup=daily_feed_keyboard())
         cus.update_user_command(user.user_id, "feed")
 
+    # subcommands
+    elif text in ["done", "yes"]:
+        cus.update_user_command(user.user_id, "none")
+        bot.send_message(user.chat_id, text="Done 👍",
+                         reply_markup=basic_start_keyboard())
+
+    elif text in ["no", "cancel"]:
+        pass
+
+    elif text in ["start", "stop"] and cus.get_user_command(user.user_id) == "feed":
+        if text == "start":
+            users_db.update_user(user.user_id, feed=True)
+
+        else:
+            users_db.delete_user(user.user_id)
+
+        cus.update_user_command(user.user_id, "none")
+        bot.send_message(user.chat_id, text="Done 👍",
+                         reply_markup=basic_start_keyboard())
+
     else:
+
+        all_topics = get_topics()  # all the available topics
+        users_topics = users_db.get_user_info(user.user_id).topics
+
         # input command for command that needs them
-        return
+        if cus.get_user_command(user.user_id) == "add-topics":
+            topic_text = text.replace(" ", "").lower().split(",")
+            for topic in topic_text:
+                if topic in all_topics:
+                    users_topics.append(topic)
+
+        elif cus.get_user_command(user.user_id) == "remove-topics":
+            topic_text = text.replace(" ", "").lower().split(",")
+            for topic in topic_text:
+                if topic in all_topics:
+                    with suppress(ValueError):
+                        users_topics.remove(topic)
+        users_topics = list(set(users_topics))
+        users_db.update_user(user.user_id, topics=users_topics)
