@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from dataclasses import field
 from time import time
+from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Tuple
 
 
 @dataclass
@@ -52,3 +57,11 @@ class UserDBInfo:
 
     def __repr__(self) -> str:
         return f"{self.user_id=} {self.feed=} {self.db_id=} {self.topics=}"
+
+
+@dataclass
+class StagedFunction:
+    """For FunctionStagingArea"""
+    fn: Callable[..., Any]
+    args: Optional[Tuple[Any, ...]] = None
+    kwargs: Optional[Dict[str, Any]] = None
