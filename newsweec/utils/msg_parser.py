@@ -10,7 +10,11 @@ from newsweec.bot.keyboards import settings_keyboard
 from newsweec.database.bot_db import get_topics
 from newsweec.database.users_db import UsersDB
 from newsweec.meta.handlers import CurrentUserState
+from newsweec.meta.handlers import FunctionStagingArea
 from newsweec.utils._dataclasses import NewUser
+
+
+fsa = FunctionStagingArea()
 
 
 def convert_topics_to_strings(topics: List[str]) -> str:
@@ -73,13 +77,21 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
         cus.update_user_command(user.user_id, "feed")
 
     # subcommands
+
+    # done, yes will usually perform an action from the function stagin area
+
     elif text in ["done", "yes"]:
+        fsa.perform(user.user_id)
         cus.update_user_command(user.user_id, "none")
         bot.send_message(user.chat_id, text="Done 👍",
                          reply_markup=basic_start_keyboard())
+        fsa.remove(user.user_id)
 
     elif text in ["no", "cancel"]:
-        pass
+        fsa.remove(user.user_id)
+        cus.update_user_command(user.user_id, "none")
+        bot.send_message(user.chat_id, text="Okay 👍",
+                         reply_markup=basic_start_keyboard())
 
     elif text in ["start", "stop"] and cus.get_user_command(user.user_id) == "feed":
         if text == "start":
@@ -94,21 +106,26 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
 
     else:
 
-        all_topics = get_topics()  # all the available topics
-        users_topics = users_db.get_user_info(user.user_id).topics
+        if cus.get_user_command(user.user_id) in ["add-topics", "remove-topics"]:
+            all_topics = get_topics()  # all the available topics
+            users_topics = users_db.get_user_info(user.user_id).topics
 
-        # input command for command that needs them
-        if cus.get_user_command(user.user_id) == "add-topics":
-            topic_text = text.replace(" ", "").lower().split(",")
-            for topic in topic_text:
-                if topic in all_topics:
-                    users_topics.append(topic)
+            # input command for command that needs them
+            if cus.get_user_command(user.user_id) == "add-topics":
+                topic_text = text.replace(" ", "").lower().split(",")
+                for topic in topic_text:
+                    if topic in all_topics:
+                        users_topics.append(topic)
 
-        elif cus.get_user_command(user.user_id) == "remove-topics":
-            topic_text = text.replace(" ", "").lower().split(",")
-            for topic in topic_text:
-                if topic in all_topics:
-                    with suppress(ValueError):
-                        users_topics.remove(topic)
-        users_topics = list(set(users_topics))
-        users_db.update_user(user.user_id, topics=users_topics)
+            elif cus.get_user_command(user.user_id) == "remove-topics":
+                topic_text = text.replace(" ", "").lower().split(",")
+                for topic in topic_text:
+                    if topic in all_topics:
+                        with suppress(ValueError):
+                            users_topics.remove(topic)
+
+            users_topics = list(set(users_topics))
+
+            # add the function to call into the stagin area
+            fsa.add(user.user_id, fn=users_db.update_user, args=(
+                user.user_id,), kwargs={"topics": users_topics})
