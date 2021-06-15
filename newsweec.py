@@ -1,7 +1,6 @@
 import argparse
 import os
 from contextlib import suppress
-from pathlib import Path
 
 from newsweec.bot.bot import start_bot
 
