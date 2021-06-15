@@ -22,7 +22,7 @@ ADMIN_ID="telegram-user-id-of-the-admin"
 ### Start the bot
 ```commandline
 python newsweec.py --start
-``` 
+```
 
 ## To test whether the internal functions work or not.
 

@@ -4,6 +4,7 @@ attrs==21.2.0
 autopep8==1.5.7
 cached-property==1.5.2
 colorama==0.4.4
+flake8==3.9.2
 iniconfig==1.1.1
 packaging==20.9
 pluggy==0.13.1
@@ -14,4 +15,3 @@ pytest==6.2.4
 pytest-mock
 reorder-python-imports==2.5.0
 toml==0.10.2
-flake8==3.9.2
