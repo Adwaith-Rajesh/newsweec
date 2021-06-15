@@ -3,11 +3,12 @@ bs4==0.0.1
 certifi==2021.5.30
 chardet==4.0.0
 idna==2.10
+newsapi-python==0.2.6
+pysondb==1.0.3
 pyTelegramBotAPI==3.7.9
 python-dotenv==0.17.1
 requests==2.25.1
+rich==10.2.2
+schedule==1.1.0
 soupsieve==2.2.1
 urllib3==1.26.5
-rich==10.2.2
-pysondb==1.0.3
-schedule==1.1.0
