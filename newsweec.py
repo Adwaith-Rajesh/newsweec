@@ -2,8 +2,6 @@ import argparse
 import os
 from contextlib import suppress
 
-from newsweec.main import start_bot
-
 
 def make_folder(folder_name: str) -> None:
     with suppress(FileExistsError):
@@ -25,7 +23,8 @@ def main():
 
     if args.init:
         folders = ["db_store", "logs"]
-        db_files = [os.path.join("db_store", "users_db.json")]
+        db_files = [os.path.join("db_store", "users_db.json"), os.path.join(
+            "db_store", "news_db.json")]
 
         for f in folders:
             make_folder(f)
@@ -35,6 +34,7 @@ def main():
         quit()
 
     if args.start:
+        from newsweec.main import start_bot
         start_bot()
 
 

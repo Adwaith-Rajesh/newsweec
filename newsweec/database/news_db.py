@@ -24,11 +24,13 @@ class NewsDb:
         self._load_file()
 
     def _load_file(self) -> None:
-        lock = FileLock(f"{self.news_db_file}.lock")
-        with lock:
-            with open(self.news_db_file, "r") as f:
-                self.news_data.clear()
-                self.news_data = json.load(f)
+
+        if Path(self.news_db_file).is_file():
+            lock = FileLock(f"{self.news_db_file}.lock")
+            with lock:
+                with open(self.news_db_file, "r") as f:
+                    self.news_data.clear()
+                    self.news_data = json.load(f)
 
     def reload_db(self):
         self._load_file()
