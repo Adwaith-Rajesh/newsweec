@@ -41,4 +41,8 @@ def add_to_db_file(data: NewsDBDataType) -> None:
         with open(NEWS_DB_FILE, "w") as f:
             json.dump(data, f)
 
-# print(news_collection)
+
+def collect_news() -> None:
+    """Collects all the news and adds them to the db"""
+    nc = get_url_from_all_topics()
+    add_to_db_file(nc)

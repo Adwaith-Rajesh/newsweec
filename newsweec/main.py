@@ -8,6 +8,7 @@ from newsweec.meta.logger import Logger  # noreorder
 
 from newsweec.bot.bot import get_user_from_user_handler
 from newsweec.bot.bot import poll
+from newsweec.news.news_collector import collect_news
 
 
 DEBUG = logging.DEBUG
@@ -31,7 +32,7 @@ def start_bot():
             run_threaded, get_user_from_user_handler)
         # schedule.every(20).seconds.do(run_threaded, clean_q)
         # schedule.every().day.at("01:00").do(run_threaded, todays_tasks)
-        # schedule.every(1).hour.do(run_threaded, delete_history)
+        schedule.every(1).hour.do(run_threaded, collect_news)
         # get_q_users()
 
     pol_t = threading.Thread(target=_pol, daemon=True)

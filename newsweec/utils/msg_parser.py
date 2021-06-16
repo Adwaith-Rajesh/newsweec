@@ -1,13 +1,17 @@
+import time
 from contextlib import suppress
 from typing import List
 
 from telebot import TeleBot
+from telebot.apihelper import ApiTelegramException
 
+from .pretty_msg import prettify_news_links
 from newsweec.bot.keyboards import basic_start_keyboard
 from newsweec.bot.keyboards import cancel_done_keyboard
 from newsweec.bot.keyboards import daily_feed_keyboard
 from newsweec.bot.keyboards import settings_keyboard
 from newsweec.database.bot_db import get_topics
+from newsweec.database.news_db import NewsDb
 from newsweec.database.users_db import UsersDB
 from newsweec.meta.handlers import CurrentUserState
 from newsweec.meta.handlers import FunctionStagingArea
@@ -15,6 +19,7 @@ from newsweec.utils._dataclasses import NewUser
 
 
 fsa = FunctionStagingArea()
+news_db = NewsDb()
 
 
 def convert_topics_to_strings(topics: List[str]) -> str:
@@ -75,6 +80,19 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
             user.chat_id, text="Select an option",
             reply_markup=daily_feed_keyboard())
         cus.update_user_command(user.user_id, "feed")
+
+    elif text == "news":
+        topics = users_db.get_user_info(user.user_id).topics
+
+        try:
+            for topic in topics:
+                bot.send_message(
+                    user.chat_id, text=f"**{topic}**", parse_mode="markdown")
+                bot.send_message(user.chat_id, prettify_news_links(
+                    news_db.get_news(topic)), parse_mode="markdown")
+                time.sleep(1)
+        except ApiTelegramException as e:
+            print(e)
 
     # subcommands
 

@@ -1,4 +1,5 @@
 import os
+import threading
 from time import sleep
 
 from telebot import TeleBot
@@ -59,7 +60,9 @@ def get_user_from_user_handler() -> None:
 
     if user:
         user.command = user.command.lower().replace(" ", "-")
-        parse_message(bot, user, user_state_handler, users_db)
+        a = threading.Thread(target=parse_message, args=(
+            bot, user, user_state_handler, users_db))
+        a.start()
 
 # starting sequence
 
