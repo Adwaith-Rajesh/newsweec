@@ -2,7 +2,7 @@ import argparse
 import os
 from contextlib import suppress
 
-from newsweec.bot.bot import start_bot
+from newsweec.main import start_bot
 
 
 def make_folder(folder_name: str) -> None:
