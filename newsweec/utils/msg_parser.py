@@ -89,7 +89,7 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
                 bot.send_message(
                     user.chat_id, text=f"**{topic}**", parse_mode="markdown")
                 bot.send_message(user.chat_id, prettify_news_links(
-                    news_db.get_news(topic)), parse_mode="markdown")
+                    news_db.get_news(topic)))
                 time.sleep(1)
         except ApiTelegramException as e:
             print(e)
@@ -105,7 +105,7 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
                          reply_markup=basic_start_keyboard())
         fsa.remove(user.user_id)
 
-    elif text in ["no", "cancel"]:
+    elif text in ["no", "cancel", "back"]:
         fsa.remove(user.user_id)
         cus.update_user_command(user.user_id, "none")
         bot.send_message(user.chat_id, text="Okay 👍",

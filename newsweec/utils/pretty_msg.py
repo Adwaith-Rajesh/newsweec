@@ -11,7 +11,7 @@ def prettify_news_links(links: List[Dict[str, str]]) -> str:
 
     for link_dict in links:
         for title, link in link_dict.items():
-            link_string += f"**{title}** \n{link}"
+            link_string += f"{title} \n{link}"
 
         if len(link_string) > 3995:
             return link_string

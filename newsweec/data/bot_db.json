@@ -16,7 +16,8 @@
             "Add Topics",
             "Remove Topics",
             "Profile",
-            "Daily Feed"
+            "Daily Feed",
+            "Back"
         ],
         "daily_feed": [
             "Start",
