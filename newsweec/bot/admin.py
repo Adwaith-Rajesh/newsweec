@@ -10,7 +10,7 @@ from newsweec.utils.decorators import add_command
 commands: Dict[str, Callable[..., Any]] = {}
 
 
-@add_command("reload-news-db", commands)
+@add_command(["reload-news-db"], commands)
 def reload_news_db(msg_info: MessageInfo) -> None:
     """Populates the news db with latest news"""
     # collect_news()

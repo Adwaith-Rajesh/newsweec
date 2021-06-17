@@ -45,7 +45,7 @@ def start(msg: Message) -> None:
 @bot.message_handler(commands=["reload-news-db"])
 @admin_only
 @get_msg_info
-def admin_command(_: Message, msg_info: MessageInfo = None) -> None:
+def admin_command(msg: Message, msg_info: MessageInfo = None) -> None:
     cmd_func = get_admin_command(msg_info.text.replace("/", ""))
     cmd_func(msg_info)
 
