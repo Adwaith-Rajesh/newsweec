@@ -125,14 +125,21 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
     else:
 
         if cus.get_user_command(user.user_id) in ["add-topics", "remove-topics"]:
+
+            # reverse the effects of replacing " " with "-" as it is no longer treated as a command
+            text = text.replace("-", " ")
+
             all_topics = get_topics()  # all the available topics
             users_topics = users_db.get_user_info(user.user_id).topics
+            print(f"{users_topics=}")
 
             # input command for command that needs them
             if cus.get_user_command(user.user_id) == "add-topics":
                 topic_text = text.replace(" ", "").lower().split(",")
+                print(f"{topic_text=}")
                 for topic in topic_text:
                     if topic in all_topics:
+                        print(f"{topic=}")
                         users_topics.append(topic)
 
             elif cus.get_user_command(user.user_id) == "remove-topics":
