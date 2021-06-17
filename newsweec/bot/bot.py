@@ -13,11 +13,13 @@ from newsweec.database.users_db import UsersDB
 from newsweec.meta.handlers import CurrentUserState
 from newsweec.meta.handlers import HandleIncomingUsers
 from newsweec.utils._dataclasses import MessageInfo
+from newsweec.utils.decorators import admin_only
 from newsweec.utils.decorators import get_msg_info
 from newsweec.utils._dataclasses import NewUser
 from newsweec.utils.msg_parser import parse_message
 
 from .keyboards import basic_start_keyboard
+from .admin import get_admin_command
 
 BOT_TOKEN = os.environ.get("BOT_API_TOKEN")
 
@@ -37,9 +39,19 @@ def start(msg: Message) -> None:
     bot.send_message(msg.from_user.id, "Hello",
                      reply_markup=basic_start_keyboard())
 
+# admin command
+
+
+@bot.message_handler(commands=["reload-news-db"])
+@admin_only
+@get_msg_info
+def admin_command(_: Message, msg_info: MessageInfo = None) -> None:
+    cmd_func = get_admin_command(msg_info.text.replace("/", ""))
+    cmd_func(msg_info)
 
 # msg handler
 # handles all the messages and checks whether it is a command or not
+
 
 @bot.message_handler(func=lambda msg: True)
 @get_msg_info
