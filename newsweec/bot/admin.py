@@ -3,14 +3,14 @@ from typing import Callable
 from typing import Dict
 
 from newsweec.utils._dataclasses import MessageInfo
-from newsweec.utils.decorators import add_admin_command
+from newsweec.utils.decorators import add_command
 # from newsweec.news.news_collector import collect_news
 
 # A Dict of all the admin commands
 commands: Dict[str, Callable[..., Any]] = {}
 
 
-@add_admin_command("reload-news-db", commands)
+@add_command("reload-news-db", commands)
 def reload_news_db(msg_info: MessageInfo) -> None:
     """Populates the news db with latest news"""
     # collect_news()
