@@ -1,5 +1,8 @@
 import time
 from contextlib import suppress
+from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import List
 
 from telebot import TeleBot
@@ -16,6 +19,7 @@ from newsweec.database.users_db import UsersDB
 from newsweec.meta.handlers import CurrentUserState
 from newsweec.meta.handlers import FunctionStagingArea
 from newsweec.utils._dataclasses import NewUser
+from newsweec.utils.decorators import add_command
 
 
 fsa = FunctionStagingArea()
@@ -31,15 +35,25 @@ def convert_topics_to_strings(topics: List[str]) -> str:
     return topics_string
 
 
+def add_func_for_multiple_commands(cmds: List[str], cmd_dict: Dict[str, Callable[..., Any]], func: Callable[..., Any]):
+    pass
+
+
 def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: UsersDB) -> None:
+
+    user_commands: Dict[str, Callable[..., Any]] = {}
+
     text = user.command
-    if text == "settings":
+
+    @add_command(["settings"], user_commands)
+    def settings() -> None:
         bot.send_message(user.chat_id, text="Select an option.",
                          reply_markup=settings_keyboard())
 
         cus.update_user_command(user.user_id, "settings")
 
-    elif text == "add-topics":
+    @add_command(["add-topics"], user_commands)
+    def add_topics() -> None:
         ud = users_db.get_user_info(user.user_id)
         bot.send_message(
             user.chat_id,
@@ -55,7 +69,8 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
                          reply_markup=cancel_done_keyboard())
         cus.update_user_command(user.user_id, "add-topics")
 
-    elif text == "remove-topics":
+    @add_command(["remove-topics"], user_commands)
+    def remove_topics() -> None:
         ud = users_db.get_user_info(user.user_id)
         bot.send_message(
             user.chat_id, text=f"Your Topics \n{convert_topics_to_strings(ud.topics)}",
@@ -65,7 +80,8 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
                          reply_markup=cancel_done_keyboard())
         cus.update_user_command(user.user_id, "remove-topics")
 
-    elif text == "profile":
+    @add_command(["profile"], user_commands)
+    def profile() -> None:
         ud = users_db.get_user_info(user.user_id)
         y = "Yes" if ud.feed else "No"
         bot.send_message(
@@ -74,13 +90,15 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
             reply_markup=basic_start_keyboard())
         cus.update_user_command(user.user_id, "none")
 
-    elif text == "daily-feed":
+    @add_command(["daily-feed"], user_commands)
+    def daily_feed() -> None:
         bot.send_message(
             user.chat_id, text="Select an option",
             reply_markup=daily_feed_keyboard())
         cus.update_user_command(user.user_id, "feed")
 
-    elif text == "news":
+    @add_command(["news"], user_commands)
+    def news() -> None:
         topics = users_db.get_user_info(user.user_id).topics
 
         try:
@@ -95,31 +113,38 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
 
     # subcommands
 
-    # done, yes will usually perform an action from the function stagin area
+    # done, yes will usually perform an action from the function staging area
 
-    elif text in ["done", "yes"]:
+    @add_command(["done", "yes"], user_commands)
+    def done_yes() -> None:
         fsa.perform(user.user_id)
         cus.update_user_command(user.user_id, "none")
         bot.send_message(user.chat_id, text="Done 👍",
                          reply_markup=basic_start_keyboard())
         fsa.remove(user.user_id)
 
-    elif text in ["no", "cancel", "back"]:
+    @add_command(["no", "cancel", "back"], user_commands)
+    def no_cancel_back() -> None:
         fsa.remove(user.user_id)
         cus.update_user_command(user.user_id, "none")
         bot.send_message(user.chat_id, text="Okay 👍",
                          reply_markup=basic_start_keyboard())
 
-    elif text in ["start", "stop"] and cus.get_user_command(user.user_id) == "feed":
-        if text == "start":
-            users_db.update_user(user.user_id, feed=True)
+    @add_command(["start", "stop"], user_commands)
+    def feed_start_stop() -> None:
+        if cus.get_user_command(user.user_id) == "feed":
+            if text == "start":
+                users_db.update_user(user.user_id, feed=True)
 
-        else:
-            users_db.delete_user(user.user_id)
+            else:
+                users_db.delete_user(user.user_id)
 
-        cus.update_user_command(user.user_id, "none")
-        bot.send_message(user.chat_id, text="Done 👍",
-                         reply_markup=basic_start_keyboard())
+            cus.update_user_command(user.user_id, "none")
+            bot.send_message(user.chat_id, text="Done 👍",
+                             reply_markup=basic_start_keyboard())
+
+    if text in user_commands:
+        user_commands[text]()
 
     else:
 
@@ -130,16 +155,15 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
 
             all_topics = get_topics()  # all the available topics
             users_topics = users_db.get_user_info(user.user_id).topics
+            topic_text = text.replace(" ", "").lower().split(",")
 
             # input command for command that needs them
             if cus.get_user_command(user.user_id) == "add-topics":
-                topic_text = text.replace(" ", "").lower().split(",")
                 for topic in topic_text:
                     if topic in all_topics:
                         users_topics.append(topic)
 
             elif cus.get_user_command(user.user_id) == "remove-topics":
-                topic_text = text.replace(" ", "").lower().split(",")
                 for topic in topic_text:
                     if topic in all_topics:
                         with suppress(ValueError):
