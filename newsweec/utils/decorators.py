@@ -36,7 +36,7 @@ def get_msg_info(f: Callable[[Message], None]):
     return wrapper
 
 
-def add_admin_command(name: str, cmd_dict: Dict[str, Callable[..., Any]]):
+def add_command(name: str, cmd_dict: Dict[str, Callable[..., Any]]):
 
     def add(f: Callable[..., Any]):
         cmd_dict[name] = f
