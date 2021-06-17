@@ -17,6 +17,4 @@ Newsweec is a Telegram Bot that aims at providing customized news feed directly 
 
 Chat with the bot: Telegram username: @newsweec_bot
 
-The project isn't complete yet. Star and follow the project to get instant updates
-
 - [Click Here to know how to host the bot locally for yourself](https://adwaith-rajesh.github.io/newsweec/docs/self-host)
