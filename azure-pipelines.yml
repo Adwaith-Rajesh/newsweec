@@ -29,6 +29,6 @@ steps:
 - script: |
     pytest -rx -v
     flake8 newsweec/ --max-line-length=120
-	  flake8 test/ --max-line-length=120
+    flake8 test/ --max-line-length=120
 
   displayName: 'pytest and flake'
