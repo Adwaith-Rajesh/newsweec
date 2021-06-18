@@ -2,6 +2,7 @@
 from telebot.types import CallbackQuery
 from telebot.types import Message
 
+from ._dataclasses import CallBackInfo
 from ._dataclasses import MessageInfo
 
 
@@ -15,4 +16,6 @@ def message_info_generator(msg: Message) -> MessageInfo:
 
 
 def call_back_data_generator(cb: CallbackQuery):
-    pass
+    """Get important info from the callback"""
+    return CallBackInfo(user_id=cb.from_user.id, chat_id=cb.message.chat.id,
+                        message_id=cb.message.message_id, data=cb.data)

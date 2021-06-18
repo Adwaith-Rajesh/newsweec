@@ -48,6 +48,19 @@ class MessageInfo:
 
 
 @dataclass
+class CallBackInfo:
+    """Important things from the callback data"""
+
+    user_id: int
+    chat_id: int
+    message_id: int
+    data: str
+
+    def __repr__(self) -> str:
+        return f"{self.user_id=} {self.chat_id=} {self.message_id=} {self.data=}"
+
+
+@dataclass
 class UserDBInfo:
     """Info about the user from the DB"""
     feed: bool  # if false, the bot will not send any news feeds on a daily basis
