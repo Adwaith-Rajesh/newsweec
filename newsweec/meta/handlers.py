@@ -127,6 +127,9 @@ class FunctionStagingArea:
             kwargs: Optional[Dict[str, Any]] = None):
         self._to_perform[key] = StagedFunction(fn, args, kwargs)
 
+    def get(self, user_id: int) -> Union[StagedFunction, None]:
+        return self._to_perform.get(user_id, None)
+
     def remove(self, key: int):
         if key in self._to_perform:
             del self._to_perform[key]

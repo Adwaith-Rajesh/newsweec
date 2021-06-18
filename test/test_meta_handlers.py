@@ -161,3 +161,13 @@ def test_fsa_perform(fsa_class: FunctionStagingArea, fsa_test_func: Callable[[in
     rv_2 = fsa_class.perform(2)
     assert rv == 6
     assert rv_2 == 9
+
+
+def test_fsa_get(fsa_class: FunctionStagingArea, fsa_test_func: Callable[[int, Optional[int]], int]):
+    fsa_class.add(1, fsa_test_func, args=(2,))
+    assert len(fsa_class._to_perform) == 1
+
+    get_call = fsa_class.get(1)
+    assert get_call.fn == fsa_test_func
+    assert get_call.args == (2,)
+    assert get_call.kwargs is None
