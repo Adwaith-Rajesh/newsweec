@@ -1,5 +1,6 @@
 # Newsweec
 [![Testing](https://img.shields.io/github/workflow/status/Adwaith-Rajesh/newsweec/Testing?label=Testing&style=for-the-badge)](https://github.com/Adwaith-Rajesh/newsweec/actions/workflows/test.yml)
+[![Azure DevOps builds](https://img.shields.io/azure-devops/build/adwaithrajesh/8d11fcc8-9bf7-41cf-95af-bd240456c13e/5?label=Azure%20Pipelines&style=for-the-badge)](https://dev.azure.com/adwaithrajesh/adwaith/_build?definitionId=5&_a=summary)
 [![License](https://img.shields.io/github/license/Adwaith-Rajesh/newsweec?logoColor=brightgreen&style=for-the-badge)](./LICENSE)
 ![https://adwaith-rajesh.github.io/newsweec/](./assets/newsweec-logo-expanded.png "newsweec")
 
