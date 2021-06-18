@@ -19,3 +19,10 @@ Newsweec is a Telegram Bot that aims at providing customized news feed directly 
 Chat with the bot: Telegram username: @newsweec_bot
 
 - [Click Here to know how to host the bot locally for yourself](https://adwaith-rajesh.github.io/newsweec/docs/self-host)
+
+---
+<br>
+
+<!-- [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com) -->
+
+<img align=center src="https://forthebadge.com/images/badges/made-with-python.svg" href="https://python.org" >

@@ -22,9 +22,13 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
+    pip install pytest pytest-azurepipelines pytest-mock flake8
+
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest pytest-azurepipelines pytest-mock
     pytest -rx -v
-  displayName: 'pytest'
+    flake8 newsweec/ --max-line-length=120
+	  flake8 test/ --max-line-length=120
+
+  displayName: 'pytest and flake'
