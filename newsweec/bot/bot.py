@@ -3,6 +3,7 @@ import threading
 from time import sleep
 
 from telebot import TeleBot
+from telebot.types import CallbackQuery
 from telebot.types import Message
 
 from newsweec.meta.logger import logging  # noreorder
@@ -12,14 +13,17 @@ from newsweec.database.bot_db import is_valid_command
 from newsweec.database.users_db import UsersDB
 from newsweec.meta.handlers import CurrentUserState
 from newsweec.meta.handlers import HandleIncomingUsers
+from newsweec.utils._dataclasses import CallBackInfo
 from newsweec.utils._dataclasses import MessageInfo
 from newsweec.utils.decorators import admin_only
+from newsweec.utils.decorators import get_call_back_info
 from newsweec.utils.decorators import get_msg_info
 from newsweec.utils._dataclasses import NewUser
 from newsweec.utils.msg_parser import parse_message
 
 from .keyboards import basic_start_keyboard
 from .admin import get_admin_command
+
 
 BOT_TOKEN = os.environ.get("BOT_API_TOKEN")
 
@@ -39,22 +43,20 @@ def start(msg: Message) -> None:
     bot.send_message(msg.from_user.id, "Hello",
                      reply_markup=basic_start_keyboard())
 
+
 # admin command
-
-
-@bot.message_handler(commands=["reload-news-db"])
-@admin_only
-@get_msg_info
+@ bot.message_handler(commands=["reload-news-db"])
+@ admin_only
+@ get_msg_info
 def admin_command(msg: Message, msg_info: MessageInfo = None) -> None:
     cmd_func = get_admin_command(msg_info.text.replace("/", ""))
     cmd_func(msg_info)
 
+
 # msg handler
 # handles all the messages and checks whether it is a command or not
-
-
-@bot.message_handler(func=lambda msg: True)
-@get_msg_info
+@ bot.message_handler(func=lambda msg: True)
+@ get_msg_info
 def message_handler(msg: Message, msg_info: MessageInfo = None) -> None:
     """Add user to the q if the msg is a command or the msg is part of a command"""
 
@@ -66,6 +68,12 @@ def message_handler(msg: Message, msg_info: MessageInfo = None) -> None:
         bot.send_message(msg_info.chat_id, text="Invalid Option 😅")
 
 
+@ bot.callback_query_handler(func=lambda msg: True)
+@ get_call_back_info
+def cb_handler(msg: CallbackQuery, cb_info: CallBackInfo):
+    print(cb_info)
+
+
 # get the user from the user handler for message parsing
 def get_user_from_user_handler() -> None:
     user = users_handler.get_user()
@@ -75,8 +83,6 @@ def get_user_from_user_handler() -> None:
         a = threading.Thread(target=parse_message, args=(
             bot, user, user_state_handler, users_db))
         a.start()
-
-# starting sequence
 
 
 def poll() -> None:
