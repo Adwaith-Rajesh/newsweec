@@ -25,4 +25,5 @@ Chat with the bot: Telegram username: @newsweec_bot
 
 <!-- [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com) -->
 
-<img align=center src="https://forthebadge.com/images/badges/made-with-python.svg" href="https://python.org" >
+
+<h3 align="center"> <img align="center" src="https://forthebadge.com/images/badges/made-with-python.svg" href="https://python.org" ></h3>
