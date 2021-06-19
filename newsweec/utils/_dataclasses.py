@@ -28,6 +28,7 @@ class UserCommand:
 
     user_id: int
     command: str
+    args: Optional[Any] = None  # any extra args
     insert_time: int = int(time())  # for garbage collection
 
     def __repr__(self) -> str:

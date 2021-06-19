@@ -56,12 +56,15 @@ class CurrentUserState:
     def add_user_commands(self, user: UserCommand) -> None:
         self._user_commands.append(user)
 
-    def update_user_command(self, user_id: int, new_command: str) -> None:
+    def update_user_command(self, user_id: int, new_command: str, args: Optional[Any] = None) -> None:
 
         if self.check_user_exists(user_id):
             for user in self._user_commands:
                 if user.user_id == user_id:
                     user.command = new_command
+
+                    if args:
+                        user.args = args
                     user.insert_time = int(time.time())
 
         else:
