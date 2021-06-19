@@ -2,8 +2,7 @@
     "commands": [
         "settings",
         "news",
-        "add-topics",
-        "remove-topics",
+        "topics",
         "profile",
         "daily-feed"
     ],
@@ -13,8 +12,7 @@
             "Settings"
         ],
         "settings": [
-            "Add Topics",
-            "Remove Topics",
+            "Topics",
             "Profile",
             "Daily Feed",
             "Back"

@@ -5,6 +5,7 @@ from typing import Callable
 from typing import Dict
 from typing import List
 
+from keyboa import Keyboa
 from telebot import TeleBot
 from telebot.apihelper import ApiTelegramException
 
@@ -20,6 +21,8 @@ from newsweec.meta.handlers import CurrentUserState
 from newsweec.meta.handlers import FunctionStagingArea
 from newsweec.utils._dataclasses import NewUser
 from newsweec.utils.decorators import add_command
+from newsweec.utils.keyboard_utils import checkbox_generator
+from newsweec.utils.keyboard_utils import flip
 
 
 fsa = FunctionStagingArea()
@@ -35,11 +38,8 @@ def convert_topics_to_strings(topics: List[str]) -> str:
     return topics_string
 
 
-def add_func_for_multiple_commands(cmds: List[str], cmd_dict: Dict[str, Callable[..., Any]], func: Callable[..., Any]):
-    pass
-
-
-def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: UsersDB) -> None:
+def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState,
+                  users_db: UsersDB, fsa: FunctionStagingArea) -> None:
 
     user_commands: Dict[str, Callable[..., Any]] = {}
 
@@ -52,33 +52,26 @@ def parse_message(bot: TeleBot, user: NewUser, cus: CurrentUserState, users_db: 
 
         cus.update_user_command(user.user_id, "settings")
 
-    @add_command(["add-topics"], user_commands)
-    def add_topics() -> None:
-        ud = users_db.get_user_info(user.user_id)
-        bot.send_message(
-            user.chat_id,
-            text=f"List of all the available topics\n.{convert_topics_to_strings(get_topics())}",
-            parse_mode="markdown"
-        )
-        bot.send_message(
-            user.chat_id, text=f"Your Topics \n{convert_topics_to_strings(ud.topics)}",
-            parse_mode="markdown")
+    @add_command(["topics"], user_commands)
+    def topics() -> None:
+        # get the users topics from the DB
+        user_topics = users_db.get_user_info(user.user_id).topics
+        all_topics = get_topics()
 
-        bot.send_message(user.chat_id,
-                         text="Enter all the topics that you want to add seperated by commas(,) and press Done",
-                         reply_markup=cancel_done_keyboard())
-        cus.update_user_command(user.user_id, "add-topics")
+        checkbox_buttons = checkbox_generator(all_topics)
+        flipped_buttons = Keyboa(
+            items=[b.button for b in flip(user_topics, checkbox_buttons)]).keyboard
 
-    @add_command(["remove-topics"], user_commands)
-    def remove_topics() -> None:
-        ud = users_db.get_user_info(user.user_id)
+        cus.update_user_command(
+            user.user_id, new_command="topics", args=user_topics)
+        # send the user the topic checkbox with the currect flipped ones
+        bot.send_message(user.chat_id, text="Your topics",
+                         reply_markup=flipped_buttons)
+        # add a function to fsa with topics update in users db
+        fsa.add(user.user_id, fn=users_db.update_user,
+                kwargs={"topics": user_topics})
         bot.send_message(
-            user.chat_id, text=f"Your Topics \n{convert_topics_to_strings(ud.topics)}",
-            parse_mode="markdown")
-        bot.send_message(user.chat_id,
-                         text="Enter all the topics that you want to remove seperated by commas(,) and press Done",
-                         reply_markup=cancel_done_keyboard())
-        cus.update_user_command(user.user_id, "remove-topics")
+            user.chat_id, text="Press done when you've edited your topics list", reply_markup=cancel_done_keyboard())
 
     @add_command(["profile"], user_commands)
     def profile() -> None:

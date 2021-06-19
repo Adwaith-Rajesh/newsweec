@@ -6,6 +6,7 @@ from rich.logging import RichHandler
 
 logging.getLogger("urllib3.connectionpool").disabled = True
 logging.getLogger("schedule").disabled = True
+logging.getLogger("filelock").disabled = True
 
 
 logging.basicConfig(
